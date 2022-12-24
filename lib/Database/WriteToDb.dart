@@ -7,6 +7,8 @@ import '../Models/recipe.dart';
 String host = Platform.environment['MONGO_DART_DRIVER_HOST'] ?? '127.0.0.1';
 String port = Platform.environment['MONGO_DART_DRIVER_PORT'] ?? '27017';
 
+
+// Create / Write one recipe to the database.
 void main() async {
   var db = Db('mongodb://$host:$port/Cookbook');
   // Example url for Atlas connection
@@ -25,21 +27,36 @@ void main() async {
     '1. mix ingredients',
     '2. put batter in pan'
   ]);
-
-  Map recipeMap = <String, Map>{};
+  Recipe pie = Recipe('Apple Pie', [
+    Ingredient('apple','Delicious' ,10,'-'),
+    Ingredient('flour','AP', 5, 'cups'),
+    Ingredient('egg','Large', 1,'-')
+  ], [
+    'mix ingredients',
+    'put apples and batter in pie plate'
+  ]);
+  // Map recipeMap = <String, Map>{};
 
   await db.open();
   await db.drop();
   print('====================================================================');
   print('>> Adding Recipe');
   var collection = db.collection('recipe');
-  await collection.insertOne(
+  await collection.insert(
     {
       'name': cake.recipeName,
-      'ingredients': cake.ingredients[0].name,
-      'steps': cake.steps[0]
+      //iterate - list - map
+      'ingredients': [cake.ingredients[1].name,
+                      cake.ingredients[1].type,
+                      cake.ingredients[1].amount,
+                      cake.ingredients[1].measurement
+                      ],
+      // iterate - list  - map
+      'steps': [cake.steps[0],
+                cake.steps[1]
+               ]
     });
 
-
   await db.close();
+  print('>> Recipe Added/Updated');
 }
